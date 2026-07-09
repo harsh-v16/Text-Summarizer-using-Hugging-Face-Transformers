@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Summarizer</title>
+    <style>
+    /* Global Resets & Modern Dark Typography */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #0b0f19; /* Deep Slate Blue Canvas */
+        color: #f1f5f9; /* Soft Off-White for high readability */
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    /* Premium Glassmorphism Dashboard Container */
+    .container {
+        width: 100%;
+        max-width: 650px;
+        background: #111827; /* Rich Dark Blue/Gray Card */
+        border-radius: 16px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+        border: 1px solid #1f2937;
+        padding: 40px;
+    }
+
+    /* Header Section Styling */
+    h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: -0.025em;
+        margin-bottom: 6px;
+        text-align: left;
+    }
+
+    h3 {
+        font-size: 14px;
+        font-weight: 500;
+        color: #6366f1; /* Electric Indigo Accent */
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 16px;
+        text-align: left;
+        margin-top: 0;
+    }
+
+    p {
+        font-size: 14px;
+        color: #9ca3af; /* Muted gray for body text */
+        margin-bottom: 28px;
+        line-height: 1.5;
+    }
+
+    /* Form & Elements Layout */
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Interactive Dark Inputs */
+    textarea {
+        width: 100%;
+        height: 180px;
+        padding: 16px;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        font-size: 15px;
+        color: #f3f4f6;
+        line-height: 1.6;
+        resize: vertical;
+        background-color: #1f2937; /* Darker field fill */
+        transition: all 0.25s ease-in-out;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: #6366f1; /* Indigo glow on focus */
+        background-color: #111827;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+    }
+
+    textarea::placeholder {
+        color: #6b7280;
+    }
+
+    /* Interactive Indigo Action Button */
+    button {
+        background-color: #4f46e5;
+        color: #ffffff;
+        border: none;
+        padding: 14px 24px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        cursor: pointer;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        transition: all 0.2s ease;
+    }
+
+    button:hover {
+        background-color: #6366f1; /* Shifts to a brighter neon-blue on hover */
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.45);
+    }
+
+    button:active {
+        transform: translateY(0);
+        background-color: #4338ca;
+    }
+
+    /* Output Results Card */
+    .summary-output {
+        margin-top: 32px;
+        background: rgba(31, 41, 55, 0.5); /* Semi-transparent dark overlay */
+        padding: 24px;
+        border-radius: 12px;
+        border: 1px dashed #4b5563;
+    }
+
+    #summary-heading {
+        font-size: 15px;
+        font-weight: 600;
+        color: #818cf8; /* Softer indigo variant for readability */
+        text-transform: none;
+        letter-spacing: normal;
+        margin-bottom: 10px;
+    }
+
+    #summary-text {
+        font-size: 14.5px;
+        color: #e5e7eb;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text Summarizer</h1>
+        <h3>using HuggingFace Transformer</h3>
+        <p>Write or Paste your contenet below for summarization.</p>
+
+        <form id="summarization-form">
+            <textarea id="dialogue-input" placeholder="Enter your content here..." required></textarea>
+            <button type = "submit">Summarize</button>
+        </form>
+
+        <div class="summary-output">
+            <h3 id="summary-heading">Content Summary</h3>
+            <p id="summary-text"></p>
+        </div>
+
+    </div>
+    <script>
+        document.getElementById("summarization-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+        
+            const dialogueInput = document.getElementById("dialogue-input");
+            const summaryText = document.getElementById("summary-text");
+            const submitButton = e.target.querySelector("button");
+        
+            const dialogue = dialogueInput.value.trim();
+            if (!dialogue) return;
+        
+            summaryText.innerText = "Processing...";
+            submitButton.disabled = true;
+        
+            try {
+                const response = await fetch("/summarize/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ dialogue }),
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+        
+                const data = await response.json();
+                summaryText.innerText = data.summary || "No summary returned.";
+            } catch (err) {
+                
+                summaryText.innerText = `Error: ${err.message}`;
+            } finally {
+                
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
