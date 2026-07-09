@@ -1,0 +1,14 @@
+torch
+transformers
+datasets
+sentencepiece
+accelerate
+fastapi
+uvicorn
+jinja2
+python-multipart
+numpy
+pandas
+scikit-learn
+evaluate
+rouge-score
