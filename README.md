@@ -84,11 +84,11 @@ The dataset consists of human conversations paired with high-quality reference s
 
 # 🖥️ Web Application Preview
 
-> Add the application screenshot inside the **images** folder.
+<div align="center">
 
-```md
-![Application](images/homepage.png)
-```
+<img src="images/homepage.png" width="800" alt="Text Summarizer Web Application">
+
+</div>
 
 The web application allows users to:
 
